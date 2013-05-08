@@ -1,4 +1,4 @@
-var OAUTH2_CLIENT_ID = '222225811576.apps.googleusercontent.com';
+var OAUTH2_CLIENT_ID = '';
 var OAUTH2_SCOPES = [
   'https://www.googleapis.com/auth/youtube'
 ];
