@@ -14,8 +14,10 @@ var Video = {
       var playlistItems = response.result.items,
       playlistArray = [];
       console.log(playlistItems);
+
       for (item in playlistItems) {
         console.log(playlistItems[item].id);
+
         $('#playlist_titles ul').append('<li><a href="#" id="' + item + '">' + playlistItems[item].snippet.title + '</a></li>');
         playlistArray.push(playlistItems[item].id);
       }
@@ -90,6 +92,4 @@ var Video = {
   }      
 
 };
-
-
 
