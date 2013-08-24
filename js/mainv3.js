@@ -1,4 +1,18 @@
-var Video = {
+var Video = new (Backbone.Router.extend({
+
+  routes: {
+    '': 'index'
+  },
+
+  initialize: function() {
+    console.log('router initialized');
+    this.index();
+  },
+
+  index: function() {
+    console.log('index loaded');
+    this.handleAPILoaded();
+  },
 
   handleAPILoaded: function() {
     this.requestPlaylists();
@@ -91,5 +105,9 @@ var Video = {
     });
   }      
 
-};
+}));
+$(document).ready(function() {
+  Backbone.history.start({ root: "/yt-playlist-viewer/" });
+});
+
 

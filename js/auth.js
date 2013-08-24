@@ -1,3 +1,29 @@
+Backbone.sync = function(method, model, options) {
+  switch (method) {
+    case 'create':
+      googleAPI.create(model, options);
+    break;
+
+    case 'update':
+      googleAPI.update(model, options);
+    break;
+
+    case 'delete':
+      googleAPI.destroy(model, options);
+    break;
+
+    case 'read':
+      // The model value is a collection in this case
+      googleAPI.list(model, options);
+    break;
+
+    default:
+      // Something probably went wrong
+      console.error('Unknown method:', method);
+    break;
+  }
+};
+
 var OAUTH2_CLIENT_ID = '222225811576.apps.googleusercontent.com';
 var OAUTH2_SCOPES = [
   'https://www.googleapis.com/auth/youtube'
@@ -35,6 +61,6 @@ function handleAuthResult(authResult) {
 
 function loadAPIClientInterfaces() {
   gapi.client.load('youtube', 'v3', function() {
-    Video.handleAPILoaded();
+    Video();
   });
 }
