@@ -1,20 +1,39 @@
+//requirejs(['app']);
+
+
+
+/*define(["jquery", "jquery.alpha", "jquery.beta"], function($) {
+  $(function() {
+    $('body').alpha().beta();
+  });
+});*/
+//requirejs(['MyModel', 'plugins', 'auth']);
+
+
 var Video = new (Backbone.Router.extend({
 
   routes: {
-    '': 'index'
+    '': 'index',
+    'playlists/:plist': 'getPlaylist',
+    'playlists/:plist/:videoId': 'showTrack'
   },
 
-  initialize: function() {
+  /*initialize: function() {
     console.log('router initialized');
     this.index();
-  },
+  },*/
 
   index: function() {
     console.log('index loaded');
     this.handleAPILoaded();
   },
 
+  newpage: function() {
+    console.log('newpage loaded');
+  },
+
   handleAPILoaded: function() {
+    console.log("loading api");
     this.requestPlaylists();
   },
 
@@ -32,13 +51,15 @@ var Video = new (Backbone.Router.extend({
       for (item in playlistItems) {
         console.log(playlistItems[item].id);
 
-        $('#playlist_titles ul').append('<li><a href="#" id="' + item + '">' + playlistItems[item].snippet.title + '</a></li>');
+        $('#playlist_titles ul').append('<li><a href="#playlists/' + playlistItems[item].id + '" id="' + item + '">' + playlistItems[item].snippet.title + '</a></li>');
         playlistArray.push(playlistItems[item].id);
       }
       $('#playlist_titles a').on('click', function(e) {
-        e.preventDefault();
+        //e.preventDefault();
         console.log('clicked playlist');
         var id = $(this).attr('id');
+        var title = $(this).text();
+        console.log("title is " + title);
         Video.getPlaylist(playlistArray[id]);
       });
     });
@@ -46,8 +67,9 @@ var Video = new (Backbone.Router.extend({
   },
 
   getPlaylist: function(plist) {
-
+      this.navigate('playlists/' + plist);
       // get playlist
+      console.log('routing to playlist');
       console.log("playlist is " + plist);
       var request = gapi.client.youtube.playlistItems.list({
         part: 'snippet',
@@ -63,20 +85,26 @@ var Video = new (Backbone.Router.extend({
           $(got_li).parent().empty();
         }
         for (vid in playlistTracks) {
-          $('#playlist ul').append('<li><a id="' + playlistTracks[vid].snippet.resourceId.videoId + '" href="#">' +
+          $('#playlist ul').append('<li><a id="' + playlistTracks[vid].snippet.resourceId.videoId + '" href="' + '#playlists/' + plist + '/' + playlistTracks[vid].snippet.resourceId.videoId + '">' +
            playlistTracks[vid].snippet.title + '</a></li>');
         }
 
         $('#playlist a').each(function() {
-          $(this).on('click', function() {
+          $(this).on('click', function(e) {
+            e.preventDefault();
             var video_id = $(this).attr('id');
-            var video_url = 'http://www.youtube.com/embed/' + video_id;
-            $('#videos iframe').attr('src', video_url);
+            Video.showTrack(video_id);
           });
         });
-
       });
       this.addToPlaylist(plist);
+  },
+
+  showTrack: function(videoId) {
+    //this.navigate(videoId);
+    var video_url = 'http://www.youtube.com/embed/' + videoId;
+    console.log(video_url);
+    $('#videos iframe').attr('src', video_url);  
   },
 
   addToPlaylist: function(playlist) {
@@ -107,7 +135,7 @@ var Video = new (Backbone.Router.extend({
 
 }));
 $(document).ready(function() {
-  Backbone.history.start({ root: "/yt-playlist-viewer/" });
+  Backbone.history.start();
 });
 
 
