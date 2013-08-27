@@ -55,7 +55,7 @@ var Video = new (Backbone.Router.extend({
         playlistArray.push(playlistItems[item].id);
       }
       $('#playlist_titles a').on('click', function(e) {
-        //e.preventDefault();
+        e.preventDefault();
         console.log('clicked playlist');
         var id = $(this).attr('id');
         var title = $(this).text();
@@ -93,15 +93,16 @@ var Video = new (Backbone.Router.extend({
           $(this).on('click', function(e) {
             e.preventDefault();
             var video_id = $(this).attr('id');
-            Video.showTrack(video_id);
+            Video.showTrack(plist, video_id);
           });
         });
       });
       this.addToPlaylist(plist);
   },
 
-  showTrack: function(videoId) {
-    //this.navigate(videoId);
+  showTrack: function(plist, videoId) {
+    console.log("now the playlist is " + plist);
+    Video.navigate('playlists/' + plist + '/' + videoId);
     var video_url = 'http://www.youtube.com/embed/' + videoId;
     console.log(video_url);
     $('#videos iframe').attr('src', video_url);  
