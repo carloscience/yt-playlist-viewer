@@ -18,7 +18,6 @@ var AppList = Backbone.Collection.extend({
 });
 var appList = new AppList();
 
-
 // view
 var AppView = Backbone.View.extend({
   template: _.template('<li><a class="pl_list" href="#playlists/<%= plistId %>" id="<%= idNum %>"><%= plistTitle %></a></li>'),
