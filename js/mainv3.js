@@ -2,6 +2,13 @@
 var AppModel = Backbone.Model.extend({
   urlRoot: '/yt-playlist-viewer'
 });
+//var appModel = new AppModel();
+// collection model
+//var AppList = Backbone.Collection.extend({
+  //model: appModel
+  //url: '/yt-playlist-viewer'
+//});
+//var appList = new AppList();
 
 // view
 var AppView = Backbone.View.extend({
@@ -12,7 +19,7 @@ var AppView = Backbone.View.extend({
 
   initialize: function() {
     console.log('initializing view');
-    //$(this.el).unbind("click");
+    $(this.el).unbind("click");
     this.listenTo(this.model, 'change', this.render);
     //this.model.on('change', this.render, this);
   },
@@ -26,10 +33,9 @@ var AppView = Backbone.View.extend({
     e.preventDefault();
     var id = $(e.currentTarget).data("id");
     console.log("data attribute is " + id);
-    var item = this.model.get(id);
-    console.log('opening playlist id' + item.get('plistId'));
+    Video.getPlaylist(id);
   },
-  
+
   render: function() {
     console.log("html is " + this.$el.html());
     this.$el.append(this.template(this.model.attributes));
@@ -92,23 +98,16 @@ var Video = new (Backbone.Router.extend({
         app_model["appModel" + item].set({plistId: playlistItems[item].id, idNum: item, plistTitle: playlistItems[item].snippet.title });
         app_model["appModel" + item].fetch();
         app_model["appModel" + item].save();
+        //appList.add(app_model["appModel" + item]);
         console.log("this is the playlist id " + app_model["appModel" + item].get('plistId'));
         app_view["appView" + item] = new AppView({model: app_model["appModel" + item], el: $('.showPlaylists')});
         var appView = new AppView({model: app_model["appModel" + item]});
         app_view["appView" + item].render();
         console.log('appView' + item);
+        //console.log("json is " + appList.toJSON());
         console.log("getting model " + app_model["appModel" + item].get('plistTitle'));
         playlistArray.push(playlistItems[item].id);
       }
-  
-      /*$('#playlist_titles a').on('click', function(e) {
-        e.preventDefault();
-        console.log('clicked playlist');
-        var id = $(this).attr('id');
-        var title = $(this).text();
-        console.log("title is " + title);
-        Video.getPlaylist(playlistArray[id]);
-      });*/
     });
 
   },
