@@ -5,20 +5,29 @@ var AppModel = Backbone.Model.extend({
 
 // view
 var AppView = Backbone.View.extend({
-  template: _.template('<li><a class="pl_list" href="#playlists/<%= plistId %>" id="<%= idNum %>"><%= plistTitle %></a></li>'),
+  template: _.template('<li><a data-id="<%= plistId %>" class="pl_list" href="#playlists/<%= plistId %>" id="<%= idNum %>"><%= plistTitle %></a></li>'),
   //el: $('.showPlaylists'),
   tagName: 'ul',
   className: 'showPlaylists',
 
   initialize: function() {
     console.log('initializing view');
+    //$(this.el).unbind("click");
     this.listenTo(this.model, 'change', this.render);
     //this.model.on('change', this.render, this);
   },
   
   events: {
-    'click .pl_list': 'getPlaylist',
+    'click .pl_list': 'open',
     'click .videoName': 'showTrack'
+  },
+
+  open: function(e) {
+    e.preventDefault();
+    var id = $(e.currentTarget).data("id");
+    console.log("data attribute is " + id);
+    var item = this.model.get(id);
+    console.log('opening playlist id' + item.get('plistId'));
   },
   
   render: function() {
@@ -92,14 +101,14 @@ var Video = new (Backbone.Router.extend({
         playlistArray.push(playlistItems[item].id);
       }
   
-      $('#playlist_titles a').on('click', function(e) {
+      /*$('#playlist_titles a').on('click', function(e) {
         e.preventDefault();
         console.log('clicked playlist');
         var id = $(this).attr('id');
         var title = $(this).text();
         console.log("title is " + title);
         Video.getPlaylist(playlistArray[id]);
-      });
+      });*/
     });
 
   },
