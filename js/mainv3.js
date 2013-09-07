@@ -60,10 +60,13 @@ var PlaylistView = Backbone.View.extend({
 
   getVideoName: function(e) {
     console.log("showing video now");
-    e.preventDefault();
+    //e.preventDefault();
     var id = $(e.currentTarget).data("id");
     var pl_list = $(e.currentTarget).data("list");
     console.log("data attribute is " + id + " list is " + pl_list);
+    var video_url = 'http://www.youtube.com/embed/' + id;
+    console.log(video_url);
+    $('#videos iframe').attr('src', video_url);  
     Video.showTrack(pl_list, id);
   },
 
@@ -157,30 +160,22 @@ var Video = new (Backbone.Router.extend({
         var playlist_view = {};
         for (vid in playlistTracks) {
           playlist_model["playlistModel" + vid] = new PlaylistModel();
-          playlist_model["playlistModel" + vid].set({videoId: playlistTracks[vid].id, plistId: plist, videoTitle: playlistTracks[vid].snippet.title });
+          playlist_model["playlistModel" + vid].set({videoId: playlistTracks[vid].snippet.resourceId.videoId, plistId: plist, videoTitle: playlistTracks[vid].snippet.title });
           console.log("getting subvideo id " + playlist_model["playlistModel" + vid].get('videoId'));
           playlist_view["playlistView" + vid] = new PlaylistView({model: playlist_model["playlistModel" + vid], el: $('.showVideos')});
           playlist_view["playlistView" + vid].render();
           console.log("getting submodel " + playlist_model["playlistModel" + vid].get('videoTitle'));
         }
-
-        /*$('#playlist a').each(function() {
-          $(this).on('click', function(e) {
-            e.preventDefault();
-            var video_id = $(this).attr('id');
-            Video.showTrack(plist, video_id);
-          });
-        });*/
       });
       this.addToPlaylist(plist);
   },
 
   showTrack: function(plist, videoId) {
     console.log("now the playlist is " + plist);
-    Video.navigate('playlists/' + plist + '/' + videoId);
-    var video_url = 'http://www.youtube.com/embed/' + videoId;
-    console.log(video_url);
-    $('#videos iframe').attr('src', video_url);  
+    //Video.navigate('playlists/' + plist + '/' + videoId);
+    //var video_url = 'http://www.youtube.com/embed/' + videoId;
+    //console.log(video_url);
+    //$('#videos iframe').attr('src', video_url);  
   },
 
   addToPlaylist: function(playlist) {
