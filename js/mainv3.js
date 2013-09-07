@@ -25,8 +25,8 @@ var AppView = Backbone.View.extend({
   },
   
   events: {
-    'click .pl_list': 'open',
-    'click .videoName': 'showTrack'
+    'click .pl_list': 'open'
+    /*'click .videoName': 'showTrack'*/
   },
 
   open: function(e) {
@@ -43,15 +43,39 @@ var AppView = Backbone.View.extend({
   }
 });
 
+var PlaylistView = Backbone.View.extend({
+  template: _.template('<li><a data-id="<%= videoId %>" data-list="<%= plistId %>" class="videoName" id="<%= videoId %>" href="#playlists/<%= plistId %>/<%= videoId %>"><%= videoTitle %></a></li>'),
+  tagName: 'ul',
+  className: 'showVideos',
 
+  initialize: function() {
+    console.log('initializing playlist sidebar view');
+    $(this.el).unbind('click');
+    this.listenTo(this.model, 'change', this.render);
+  },
 
-var TrackView = Backbone.View.extend({
-  template: _.template('<li><a class="videoName" id="<%= videoId %>" href="#playlists/<% plistId %>/<%= videoId %>"><%= videoTitle %></a></li>')
+  events: {
+    'click .videoName': 'getVideoName'
+  },
 
-  /*events: {
-    ''
-  },*/
+  getVideoName: function(e) {
+    console.log("showing video now");
+    e.preventDefault();
+    var id = $(e.currentTarget).data("id");
+    var pl_list = $(e.currentTarget).data("list");
+    console.log("data attribute is " + id + " list is " + pl_list);
+    Video.showTrack(pl_list, id);
+  },
 
+  render: function() {
+    this.$el.append(this.template(this.model.attributes));
+    //return this;
+  }
+
+});
+
+var PlaylistModel = Backbone.Model.extend({
+  urlRoot: '/yt-playlist-viewer'
 });
 
 // Router 
@@ -96,8 +120,6 @@ var Video = new (Backbone.Router.extend({
         console.log('appModel' + item);  
         app_model["appModel" + item] = new AppModel();
         app_model["appModel" + item].set({plistId: playlistItems[item].id, idNum: item, plistTitle: playlistItems[item].snippet.title });
-        app_model["appModel" + item].fetch();
-        app_model["appModel" + item].save();
         //appList.add(app_model["appModel" + item]);
         console.log("this is the playlist id " + app_model["appModel" + item].get('plistId'));
         app_view["appView" + item] = new AppView({model: app_model["appModel" + item], el: $('.showPlaylists')});
@@ -131,18 +153,24 @@ var Video = new (Backbone.Router.extend({
         if (got_li.length>0) {
           $(got_li).parent().empty();
         }
+        var playlist_model = {};
+        var playlist_view = {};
         for (vid in playlistTracks) {
-          $('#playlist ul').append('<li><a class="videoName" id="' + playlistTracks[vid].snippet.resourceId.videoId + '" href="' + '#playlists/' + plist + '/' + playlistTracks[vid].snippet.resourceId.videoId + '">' +
-           playlistTracks[vid].snippet.title + '</a></li>');
+          playlist_model["playlistModel" + vid] = new PlaylistModel();
+          playlist_model["playlistModel" + vid].set({videoId: playlistTracks[vid].id, plistId: plist, videoTitle: playlistTracks[vid].snippet.title });
+          console.log("getting subvideo id " + playlist_model["playlistModel" + vid].get('videoId'));
+          playlist_view["playlistView" + vid] = new PlaylistView({model: playlist_model["playlistModel" + vid], el: $('.showVideos')});
+          playlist_view["playlistView" + vid].render();
+          console.log("getting submodel " + playlist_model["playlistModel" + vid].get('videoTitle'));
         }
 
-        $('#playlist a').each(function() {
+        /*$('#playlist a').each(function() {
           $(this).on('click', function(e) {
             e.preventDefault();
             var video_id = $(this).attr('id');
             Video.showTrack(plist, video_id);
           });
-        });
+        });*/
       });
       this.addToPlaylist(plist);
   },
