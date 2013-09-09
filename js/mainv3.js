@@ -26,7 +26,6 @@ var AppView = Backbone.View.extend({
   
   events: {
     'click .pl_list': 'open'
-    /*'click .videoName': 'showTrack'*/
   },
 
   open: function(e) {
