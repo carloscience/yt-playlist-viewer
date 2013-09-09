@@ -12,6 +12,7 @@ var AppModel = Backbone.Model.extend({
 
 // view
 var AppView = Backbone.View.extend({
+  //pass in playlist id and playlist title
   template: _.template('<li><a data-id="<%= plistId %>" class="pl_list" href="#playlists/<%= plistId %>" id="<%= idNum %>"><%= plistTitle %></a></li>'),
   //el: $('.showPlaylists'),
   tagName: 'ul',
@@ -19,6 +20,7 @@ var AppView = Backbone.View.extend({
 
   initialize: function() {
     console.log('initializing view');
+    // prevent click event from firing twice
     $(this.el).unbind("click");
     this.listenTo(this.model, 'change', this.render);
     //this.model.on('change', this.render, this);
@@ -30,12 +32,14 @@ var AppView = Backbone.View.extend({
 
   open: function(e) {
     e.preventDefault();
+    // get playlist id from link
     var id = $(e.currentTarget).data("id");
     console.log("data attribute is " + id);
     Video.getPlaylist(id);
   },
 
   render: function() {
+    // render the app model view
     console.log("html is " + this.$el.html());
     this.$el.append(this.template(this.model.attributes));
     //return this;
@@ -43,6 +47,7 @@ var AppView = Backbone.View.extend({
 });
 
 var PlaylistView = Backbone.View.extend({
+  // pass in video id, playlist id, and video title
   template: _.template('<li><a data-id="<%= videoId %>" data-list="<%= plistId %>" class="videoName" id="<%= videoId %>" href="#playlists/<%= plistId %>/<%= videoId %>"><%= videoTitle %></a></li>'),
   tagName: 'ul',
   className: 'showVideos',
@@ -65,17 +70,20 @@ var PlaylistView = Backbone.View.extend({
     console.log("data attribute is " + id + " list is " + pl_list);
     var video_url = 'http://www.youtube.com/embed/' + id;
     console.log(video_url);
+    // set iframe source
     $('#videos iframe').attr('src', video_url);  
     Video.showTrack(pl_list, id);
   },
 
   render: function() {
+    // render the playlist model view
     this.$el.append(this.template(this.model.attributes));
     //return this;
   }
 
 });
 
+// playlist model
 var PlaylistModel = Backbone.Model.extend({
   urlRoot: '/yt-playlist-viewer/playlists'
 });
@@ -112,8 +120,8 @@ var Video = new (Backbone.Router.extend({
       part: 'snippet'
     });
     request.execute(function(response) {
-      var playlistItems = response.result.items,
-      playlistArray = [];
+      var playlistItems = response.result.items;
+      //playlistArray = [];
       console.log(playlistItems);
       var app_model = {};
       var app_view = {};
@@ -130,7 +138,7 @@ var Video = new (Backbone.Router.extend({
         console.log('appView' + item);
         //console.log("json is " + appList.toJSON());
         console.log("getting model " + app_model["appModel" + item].get('plistTitle'));
-        playlistArray.push(playlistItems[item].id);
+        //playlistArray.push(playlistItems[item].id);
       }
     });
 
@@ -150,6 +158,7 @@ var Video = new (Backbone.Router.extend({
       request.execute(function(response) {
         console.log(response);
         var playlistTracks = response.result.items;
+        // set iframe source
         $('#videos iframe').attr('src', 'http://www.youtube.com/embed/' + playlistTracks[0].snippet.resourceId.videoId);
         var got_li = $('#playlist li');
         if (got_li.length>0) {
@@ -158,6 +167,7 @@ var Video = new (Backbone.Router.extend({
         var playlist_model = {};
         var playlist_view = {};
         for (vid in playlistTracks) {
+          // add playlist data to model
           playlist_model["playlistModel" + vid] = new PlaylistModel();
           playlist_model["playlistModel" + vid].set({videoId: playlistTracks[vid].snippet.resourceId.videoId, plistId: plist, videoTitle: playlistTracks[vid].snippet.title });
           console.log("getting subvideo id " + playlist_model["playlistModel" + vid].get('videoId'));
@@ -179,6 +189,7 @@ var Video = new (Backbone.Router.extend({
   },
 
   addToPlaylist: function(playlist) {
+    // add youtube video to playlist
     $('#enter_url').show();
     $('input.url_btn').on('click', function(e) {
         e.preventDefault();
