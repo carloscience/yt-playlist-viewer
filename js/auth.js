@@ -35,6 +35,6 @@ function handleAuthResult(authResult) {
 
 function loadAPIClientInterfaces() {
   gapi.client.load('youtube', 'v3', function() {
-    Video.handleAPILoaded();
+    Video.index();
   });
 }

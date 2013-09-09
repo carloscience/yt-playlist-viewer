@@ -78,7 +78,7 @@ var PlaylistView = Backbone.View.extend({
 });
 
 var PlaylistModel = Backbone.Model.extend({
-  urlRoot: '/yt-playlist-viewer'
+  urlRoot: '/yt-playlist-viewer/playlists'
 });
 
 // Router 
@@ -90,16 +90,16 @@ var Video = new (Backbone.Router.extend({
 
   routes: {
     '': 'index',
-    'playlists/:plist': 'getPlaylist',
-    'playlists/:plist/:videoId': 'showTrack'
+    'playlists/:plistId': 'getPlaylist',
+    'playlists/:plistId/:videoId': 'showTrack'
   },
 
-  /*index: function() {
+  index: function() {
     console.log('index loaded');
-    this.appList.fetch();
-    $('.showPlaylists').html(this.appListView.render().el);
+    //this.appList.fetch();
+    //$('.showPlaylists').html(this.appListView.render().el);
     this.handleAPILoaded();
-  },*/
+  },
 
   handleAPILoaded: function() {
     console.log("loading api");
@@ -139,7 +139,7 @@ var Video = new (Backbone.Router.extend({
 
   getPlaylist: function(plist) {
       //console.log(" the link that is clicked is " + this.$el.html())
-      this.navigate('playlists/' + plist);
+      this.navigate('#playlists/' + plist);
       // get playlist
       console.log('routing to playlist');
       console.log("playlist is " + plist);
@@ -171,8 +171,9 @@ var Video = new (Backbone.Router.extend({
   },
 
   showTrack: function(plist, videoId) {
+
     console.log("now the playlist is " + plist);
-    //Video.navigate('playlists/' + plist + '/' + videoId);
+    this.navigate('#playlists/' + plist + '/' + videoId);
     //var video_url = 'http://www.youtube.com/embed/' + videoId;
     //console.log(video_url);
     //$('#videos iframe').attr('src', video_url);  
@@ -207,5 +208,5 @@ var Video = new (Backbone.Router.extend({
 }));
 
 $(document).ready(function() {
-  Backbone.history.start({pushState: true});
+  Backbone.history.start({/*pushState: true*/});
 });
