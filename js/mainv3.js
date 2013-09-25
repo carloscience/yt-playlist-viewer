@@ -2,13 +2,6 @@
 var AppModel = Backbone.Model.extend({
   urlRoot: '/yt-playlist-viewer'
 });
-//var appModel = new AppModel();
-// collection model
-//var AppList = Backbone.Collection.extend({
-  //model: appModel
-  //url: '/yt-playlist-viewer'
-//});
-//var appList = new AppList();
 
 // view
 var AppView = Backbone.View.extend({
@@ -63,16 +56,7 @@ var PlaylistView = Backbone.View.extend({
   },
 
   getVideoName: function(e) {
-    console.log("showing video now");
-    //e.preventDefault();
-    var id = $(e.currentTarget).data("id");
-    var pl_list = $(e.currentTarget).data("list");
-    console.log("data attribute is " + id + " list is " + pl_list);
-    var video_url = 'http://www.youtube.com/embed/' + id;
-    console.log(video_url);
-    // set iframe source
-    $('#videos iframe').attr('src', video_url);  
-    Video.showTrack(pl_list, id);
+    Video.showTrack(e);
   },
 
   render: function() {
@@ -146,7 +130,7 @@ var Video = new (Backbone.Router.extend({
 
   getPlaylist: function(plist) {
       //console.log(" the link that is clicked is " + this.$el.html())
-      this.navigate('#playlists/' + plist);
+      this.navigate('playlists/' + plist);
       // get playlist
       console.log('routing to playlist');
       console.log("playlist is " + plist);
@@ -179,13 +163,24 @@ var Video = new (Backbone.Router.extend({
       this.addToPlaylist(plist);
   },
 
-  showTrack: function(plist, videoId) {
-
-    console.log("now the playlist is " + plist);
-    this.navigate('#playlists/' + plist + '/' + videoId);
-    //var video_url = 'http://www.youtube.com/embed/' + videoId;
-    //console.log(video_url);
-    //$('#videos iframe').attr('src', video_url);  
+  showTrack: function(e) {
+    console.log("current target is " + e);
+    
+      var id = $(e.currentTarget).data("id");
+      var pl_list = $(e.currentTarget).data("list");
+      if (!(id)) {
+        var deeplink = window.location.hash.substring(1),
+        first_slash = deeplink.indexOf('/'),
+        last_slash = deeplink.lastIndexOf('/'),
+        pl_list = deeplink.substring(first_slash+1, last_slash),
+        id = deeplink.substring(last_slash+1);
+      }
+      this.navigate('playlists/' + pl_list + '/' + id);
+      console.log("data attribute is " + id + " list is " + pl_list);
+      var video_url = 'http://www.youtube.com/embed/' + id;
+      console.log(video_url);
+      // set iframe source
+      $('#videos iframe').attr('src', video_url);
   },
 
   addToPlaylist: function(playlist) {
@@ -212,6 +207,7 @@ var Video = new (Backbone.Router.extend({
           console.log(response);
           $('#ytfeature').html('<pre>' + JSON.stringify(response.result) + '</pre>');
         });
+      
     });
   }      
 
