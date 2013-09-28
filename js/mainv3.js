@@ -16,19 +16,6 @@ var AppView = Backbone.View.extend({
     // prevent click event from firing twice
     $(this.el).unbind("click");
     this.listenTo(this.model, 'change', this.render);
-    //this.model.on('change', this.render, this);
-  },
-  
-  events: {
-    'click .pl_list': 'open'
-  },
-
-  open: function(e) {
-    e.preventDefault();
-    // get playlist id from link
-    var id = $(e.currentTarget).data("id");
-    console.log("data attribute is " + id);
-    Video.getPlaylist(id);
   },
 
   render: function() {
@@ -49,14 +36,6 @@ var PlaylistView = Backbone.View.extend({
     console.log('initializing playlist sidebar view');
     $(this.el).unbind('click');
     this.listenTo(this.model, 'change', this.render);
-  },
-
-  events: {
-    'click .videoName': 'getVideoName'
-  },
-
-  getVideoName: function(e) {
-    Video.showTrack(e);
   },
 
   render: function() {
@@ -129,7 +108,6 @@ var Video = new (Backbone.Router.extend({
   },
 
   getPlaylist: function(plist) {
-      //console.log(" the link that is clicked is " + this.$el.html())
       this.navigate('playlists/' + plist);
       // get playlist
       console.log('routing to playlist');
@@ -163,11 +141,10 @@ var Video = new (Backbone.Router.extend({
       this.addToPlaylist(plist);
   },
 
-  showTrack: function(e) {
-    console.log("current target is " + e);
-    
-      var id = $(e.currentTarget).data("id");
-      var pl_list = $(e.currentTarget).data("list");
+  showTrack: function(pl_list, id) {
+    //console.log("current target is " + e);
+    console.log("video id is " + id);
+      //var id = $(e.currentTarget).data("id");
       if (!(id)) {
         var deeplink = window.location.hash.substring(1),
         first_slash = deeplink.indexOf('/'),
