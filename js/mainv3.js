@@ -13,7 +13,6 @@ var AppView = Backbone.View.extend({
 
   initialize: function() {
     console.log('initializing view');
-    // prevent click event from firing twice
     this.listenTo(this.model, 'change', this.render);
   },
 
@@ -21,7 +20,6 @@ var AppView = Backbone.View.extend({
     // render the app model view
     console.log("html is " + this.$el.html());
     this.$el.append(this.template(this.model.attributes));
-    //return this;
   }
 });
 
@@ -39,7 +37,6 @@ var PlaylistView = Backbone.View.extend({
   render: function() {
     // render the playlist model view
     this.$el.append(this.template(this.model.attributes));
-    //return this;
   }
 
 });
@@ -64,8 +61,6 @@ var Video = new (Backbone.Router.extend({
 
   index: function() {
     console.log('index loaded');
-    //this.appList.fetch();
-    //$('.showPlaylists').html(this.appListView.render().el);
     this.handleAPILoaded();
   },
 
